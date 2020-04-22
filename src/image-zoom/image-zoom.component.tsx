@@ -7,7 +7,9 @@ import {
   Platform,
   PlatformOSType,
   StyleSheet,
-  View
+  View,
+  ViewStyle,
+  Dimensions
 } from 'react-native';
 import styles from './image-zoom.style';
 import { ICenterOn, Props, State } from './image-zoom.type';
@@ -43,6 +45,9 @@ export default class ImageViewer extends React.Component<Props, State> {
 
   // 滑动过程中，swipeDown 偏移量
   private swipeDownOffset = 0;
+  
+  // 滑动过程中，swipeDown 偏移量
+  private swipeUpOffset = 0;
 
   // 滑动过程中，x y的总位移
   private horizontalWholeCounter = 0;
@@ -73,6 +78,12 @@ export default class ImageViewer extends React.Component<Props, State> {
 
   // 是否在左右滑
   private isHorizontalWrap = false;
+  
+  private heightDevice = Dimensions.get('window').height;
+  private marginImage  = 0;
+  private opacity = 0;
+  private opacityPosition = 0;
+  private animationBackground = new Animated.Value(0);
 
   public componentWillMount() {
     this.imagePanResponder = PanResponder.create({
@@ -334,18 +345,29 @@ export default class ImageViewer extends React.Component<Props, State> {
               // }
             } else {
               // swipeDown 不允许在已经有横向偏移量时触发
-              if (this.props.enableSwipeDown && !this.isHorizontalWrap) {
+              if ((this.props.enableSwipeDown || this.props.enableSwipeUp) && !this.isHorizontalWrap) {
                 // 图片高度小于盒子高度，只能向下拖拽，而且一定是 swipeDown 动作
                 this.swipeDownOffset += diffY;
-
+                
+                this.marginImage = (this.heightDevice - this.props.imageHeight)/2;
+                
                 // 只要滑动溢出量不小于 0，就可以拖动
-                if (this.swipeDownOffset > 0) {
-                  this.positionY += diffY / this.scale;
+                if (this.swipeDownOffset != 0) {
+                  this.positionY += diffY;
+                  this.opacity = Math.round((Math.abs(this.positionY)*100)/this.marginImage);
+                  this.opacityPosition = this.opacity/100; 
+                  
+                  if (this.opacityPosition >= 1) {
+                    this.panResponderReleaseResolve();
+                  }
+                  else {
+                    Animated.timing(this.animationBackground, {
+                      toValue:  this.opacity/100,
+                      duration: 100
+                    }).start();                    
+                  }
+                  
                   this.animatedPositionY.setValue(this.positionY);
-
-                  // 越到下方，缩放越小
-                  this.scale = this.scale - diffY / 1000;
-                  this.animatedScale.setValue(this.scale);
                 }
               }
             }
@@ -470,13 +492,15 @@ export default class ImageViewer extends React.Component<Props, State> {
   public panResponderReleaseResolve = () => {
     // 判断是否是 swipeDown
     if (this.props.enableSwipeDown && this.props.swipeDownThreshold) {
-      if (this.swipeDownOffset > this.props.swipeDownThreshold) {
+      if (this.opacityPosition >= 0.7) {
         if (this.props.onSwipeDown) {
           this.props.onSwipeDown();
+          return;
         }
-        // Stop reset.
-        return;
       }
+      
+      Animated.spring(this.animatedPositionX, { toValue: 0 } ).start();
+      Animated.spring(this.animationBackground, { toValue: 0.0 }).start();
     }
 
     if (this.props.enableCenterFocus && this.scale < 1) {
@@ -555,6 +579,9 @@ export default class ImageViewer extends React.Component<Props, State> {
 
     // swipeDown 溢出量置空
     this.swipeDownOffset = 0;
+    
+    // swipeDown 溢出量置空
+    this.swipeUpOffset = 0;
 
     this.imageDidMove('onPanResponderRelease');
   };
@@ -654,12 +681,21 @@ export default class ImageViewer extends React.Component<Props, State> {
     };
 
     const parentStyles = StyleSheet.flatten(this.props.style);
+    
+    const BackgroundColorConfig = this.animationBackground.interpolate({
+      inputRange: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+      outputRange: [ 
+        'rgba(0, 0, 0, 1.0)', 'rgba(0, 0, 0, 0.9)', 'rgba(0, 0, 0, 0.8)', 'rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.5)',
+        'rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0.3)', 'rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.1)'
+      ]
+    });
 
     return (
-      <View
+      <Animated.View
         style={{
           ...styles.container,
           ...parentStyles,
+          backgroundColor: BackgroundColorConfig,
           width: this.props.cropWidth,
           height: this.props.cropHeight
         }}
@@ -676,7 +712,7 @@ export default class ImageViewer extends React.Component<Props, State> {
             {this.props.children}
           </View>
         </Animated.View>
-      </View>
+      </Animated.View>
     );
   }
 }

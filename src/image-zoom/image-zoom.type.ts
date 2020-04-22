@@ -90,11 +90,21 @@ export class Props {
    * threshold for firing swipe down function
    */
   public swipeDownThreshold?: number = 230;
+  
+  /**
+   * threshold for firing swipe up function
+   */
+  public swipeUpThreshold?: number = 230;
 
   /**
    * for enabling vertical movement if user doesn't want it
    */
   public enableSwipeDown?: boolean = false;
+  
+  /**
+   * for enabling vertical movement if user doesn't want it
+   */
+  public enableSwipeUp?: boolean = false;
 
   /**
    * for disabling focus on image center if user doesn't want it
@@ -172,6 +182,13 @@ export class Props {
    * function that fires when user swipes down
    */
   public onSwipeDown?: () => void = () => {
+    //
+  };
+  
+  /**
+   * function that fires when user swipes up
+   */
+  public onSwipeUp?: () => void = () => {
     //
   };
 }
