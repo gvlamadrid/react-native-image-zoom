@@ -18,15 +18,15 @@
   "author": "ascoders",
   "license": "ISC",
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": "16.9.0",
+    "react-native": "0.61.5"
   },
   "devDependencies": {
-    "@types/react": "*",
-    "@types/react-native": "*",
+    "@types/react": "16.9.0",
+    "@types/react-native": "0.61.5",
     "ascoders-tslint-config": "^1.0.2",
-    "react": "*",
-    "react-native": "*",
+    "react": "16.9.0",
+    "react-native": "0.61.5",
     "tslint": "^5.8.0",
     "tslint-config-prettier": "^1.13.0",
     "typescript": "^2.9.2"
