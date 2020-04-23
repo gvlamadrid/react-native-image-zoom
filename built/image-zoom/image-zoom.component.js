@@ -81,7 +81,8 @@ var ImageViewer = /** @class */ (function (_super) {
         _this.panResponderReleaseResolve = function () {
             // 判断是否是 swipeDown
             if (_this.props.enableSwipeDown && _this.props.swipeDownThreshold) {
-                if (_this.opacityPosition >= 0.7) {
+                console.log('panResponderReleaseResolve', _this.opacityPosition);
+                if (_this.opacityPosition >= 0.35) {
                     if (_this.props.onSwipeDown) {
                         _this.props.onSwipeDown();
                         return;
@@ -415,8 +416,10 @@ var ImageViewer = /** @class */ (function (_super) {
                                 // 只要滑动溢出量不小于 0，就可以拖动
                                 if (_this.swipeDownOffset != 0) {
                                     _this.positionY += diffY;
-                                    _this.opacity = Math.round((Math.abs(_this.positionY) * 100) / _this.marginImage);
+                                    _this.opacity = Math.round((Math.abs(_this.positionY) * 100) / (_this.marginImage + Math.abs(_this.props.imageHeight) / 2));
+                                    console.log('opacity', _this.opacity);
                                     _this.opacityPosition = _this.opacity / 100;
+                                    console.log('opacityPosition', _this.opacityPosition);
                                     if (_this.opacityPosition >= 1) {
                                         _this.panResponderReleaseResolve();
                                     }

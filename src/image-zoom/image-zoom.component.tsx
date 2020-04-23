@@ -354,8 +354,8 @@ export default class ImageViewer extends React.Component<Props, State> {
                 // 只要滑动溢出量不小于 0，就可以拖动
                 if (this.swipeDownOffset != 0) {
                   this.positionY += diffY;
-                  this.opacity = Math.round((Math.abs(this.positionY)*100)/this.marginImage);
-                  this.opacityPosition = this.opacity/100; 
+                  this.opacity = Math.round((Math.abs(this.positionY)*100)/(this.marginImage+Math.abs(this.props.imageHeight)/2));
+                  this.opacityPosition = this.opacity/100;
                   
                   if (this.opacityPosition >= 1) {
                     this.panResponderReleaseResolve();
@@ -492,7 +492,7 @@ export default class ImageViewer extends React.Component<Props, State> {
   public panResponderReleaseResolve = () => {
     // 判断是否是 swipeDown
     if (this.props.enableSwipeDown && this.props.swipeDownThreshold) {
-      if (this.opacityPosition >= 0.7) {
+      if (this.opacityPosition >= 0.35) {
         if (this.props.onSwipeDown) {
           this.props.onSwipeDown();
           return;
