@@ -36,11 +36,11 @@ export default class ImageViewer extends React.Component<Props, State> {
     private opacity;
     private opacityPosition;
     private animationBackground;
-    componentWillMount(): void;
+    UNSAFE_componentWillMount(): void;
     resetScale: () => void;
     panResponderReleaseResolve: () => void;
     componentDidMount(): void;
-    componentWillReceiveProps(nextProps: Props): void;
+    UNSAFE_componentWillReceiveProps(nextProps: Props): void;
     imageDidMove(type: string): void;
     didCenterOnChange(params: {
         x: number;

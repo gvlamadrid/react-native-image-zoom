@@ -81,7 +81,6 @@ var ImageViewer = /** @class */ (function (_super) {
         _this.panResponderReleaseResolve = function () {
             // 判断是否是 swipeDown
             if (_this.props.enableSwipeDown && _this.props.swipeDownThreshold) {
-                console.log('panResponderReleaseResolve', _this.opacityPosition);
                 if (_this.opacityPosition >= 0.35) {
                     if (_this.props.onSwipeDown) {
                         _this.props.onSwipeDown();
@@ -168,7 +167,7 @@ var ImageViewer = /** @class */ (function (_super) {
         };
         return _this;
     }
-    ImageViewer.prototype.componentWillMount = function () {
+    ImageViewer.prototype.UNSAFE_componentWillMount = function () {
         var _this = this;
         this.imagePanResponder = react_native_1.PanResponder.create({
             // 要求成为响应者：
@@ -417,9 +416,7 @@ var ImageViewer = /** @class */ (function (_super) {
                                 if (_this.swipeDownOffset != 0) {
                                     _this.positionY += diffY;
                                     _this.opacity = Math.round((Math.abs(_this.positionY) * 100) / (_this.marginImage + Math.abs(_this.props.imageHeight) / 2));
-                                    console.log('opacity', _this.opacity);
                                     _this.opacityPosition = _this.opacity / 100;
-                                    console.log('opacityPosition', _this.opacityPosition);
                                     if (_this.opacityPosition >= 1) {
                                         _this.panResponderReleaseResolve();
                                     }
@@ -538,7 +535,7 @@ var ImageViewer = /** @class */ (function (_super) {
             this.centerOn(this.props.centerOn);
         }
     };
-    ImageViewer.prototype.componentWillReceiveProps = function (nextProps) {
+    ImageViewer.prototype.UNSAFE_componentWillReceiveProps = function (nextProps) {
         // Either centerOn has never been called, or it is a repeat and we should ignore it
         if ((nextProps.centerOn && !this.props.centerOn) ||
             (nextProps.centerOn && this.props.centerOn && this.didCenterOnChange(this.props.centerOn, nextProps.centerOn))) {
